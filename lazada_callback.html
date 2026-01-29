@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lazada OAuth Redirect</title>
+</head>
+<body>
+<h3>Processing Lazada Authorization...</h3>
+
+<script>
+  // -----------------------------
+  // Configuration
+  // -----------------------------
+  const POWER_AUTOMATE_URL = "https://REPLACE_WITH_YOUR_POWER_AUTOMATE_TRIGGER_URL";
+
+  // -----------------------------
+  // Capture query parameters
+  // -----------------------------
+  const params = new URLSearchParams(window.location.search);
+  const authCode = params.get("code");   // Lazada authorization code
+  const state = params.get("state");     // Optional state
+
+  if (!authCode) {
+    document.body.innerHTML =
+      "<p style='color:red;'>No authorization code found. Please try again.</p>";
+  } else {
+    document.body.innerHTML =
+      "<p>Authorization successful! You may now close this page.</p>";
+
+    // -----------------------------
+    // Send auth code to Power Automate
+    // -----------------------------
+    fetch(POWER_AUTOMATE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        platform: "lazada",
+        code: authCode,
+        state: state
+      })
+    })
+    .then(response => console.log("Lazada auth code sent to Power Automate", response))
+    .catch(error => console.error("Error sending Lazada auth code:", error));
+  }
+</script>
+
+</body>
+</html>
